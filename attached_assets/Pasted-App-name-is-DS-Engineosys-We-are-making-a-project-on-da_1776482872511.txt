@@ -1,0 +1,32 @@
+App name is "DS Engineosys", 
+We are making a project on "data science Domain" field with ML which has a description of " the project is applied in business company like to manage employee working efficiency, what work or task have been assigned and whether task is done or not, with best results. The employee judging from different - different departments. the Main department includes "Production Department", "Marketing Department" and "HR Department" inside this we have many sub departments. It should help to profit the company as a data science engineer do, and help the employee to pump for extracting good work from them but decipline, schedule and rules should followed as company made otherwise negative rewards may get employee, On the basis of performance Employee is going to get a high, mediuam and Low level work by using ML model. And we can manage the business previous and current status in this app. One more if employee ask for some resources it should be provided if it is improving and profit for business otherwise denied. The project mainly consist of Two Phase API of UI/UX which is Employee Analysis and product analysis like : analysis of product like high ranking based on selling, and low cost with best profit and each product details of which are sold on this basis it should predict product ranking and if the product is selling low on the market it is selled by putting offers on that product like "Buy one Get One free" like D-Mart how the product is going to sell, Our product category is "Cosmetic's A1" product.
+
+App color: mixture of white, light blue and light pink. 
+
+NON-Functional Requirements: 
+Easy to use interface, fast system performance, secure data handling, works on different devices.
+programming languages: python-Flask, Django, HTML, CSS, JavaScript, MongoDB etc.
+Libraries : pandas, NumPy, sklearn, Matplotlib etc. 
+
+App initialization :
+The UI/UX will be shown by clicking app it should animate the page and start with app LOGO animation and "Get started", next comes to Terms and condition page, next move on like basic app requirement and
+we going to enter one Demo page of showing nav bar of option Register, Login, About, Help options and attractive page with company branding and details of some product will be shown.
+
+register page : simple page with animated interface.
+login page : good interface looking like company login site.
+
+The App should look like flipcart App like it has Two phase Electronic and Grocery Phases,
+
+DS Enginner Dashboard:
+simple dashboard functioning with employee regitration, product adding and product offer giving.
+
+Employee Analysis Phase description:
+when the DS Engineer logged in this App it should look like flipcart app consist of Two phase Employee Analysis Phase and Product Analysis Phase, In this Employee Analysis Phase the UI/UX look like attractive to work and show some company details and attractive things, we are having Analysis work button to move to next page which Department selection page The Departments includes "Production Department", "Marketing Department" and "HR Department" inside this we have many sub departments, After selecting sub department we are going to have Employee List which we can see our company Employee's the API view should look like a Transaction Slots list we can see there Employee photo, Name, Id, current status Live or Not, after clicking on the Employee  list we can see there Two API's option like flipcart app which is 1st API is Employee Details page and 2nd one is Employee Analysis API where we can see the employee performance and working status attendance and level of work he/she assigned by ML Model in this page we can see ML algoritham model is applied for prediction of Employee future performance on the bases on previous data and predict task allocation with level wise, The ML Model is applied at Employee Analysis API. 
+
+Product Analysis Phase Description:
+Product category is : Cosmetic's A1
+It is the 2nd Phase in this app, we can see there product Ranking API the Ranking is based on the previous selling data + high cost =profit we must get, here the ML model is applied Mainly for the prediction of product is longer in the market and benefiting it to our company if the product is not selling and showing low performance in the market it predict the product analysis and the product bring in the market demand like giving offers to that product like D-Mart company do, it should be sold like "Buy one get one free" or "Buy two get one Free" this type of option given by DS Engineer from the Dashboard, but prediction of this low or not selling done by ML Algorithm Model only and it must going to message to admin dashboard, as we can see the product Ranking list and each product having on the list is Name, photo, side two options that options include of API's like 1st option is showing product details and other option must show linear regression graph of previous performance of product as output for DS Engineer study.
+
+App output: Output is going to Analyze by DS Engineer through API of graphs And Details.
+
+as planned flow chart attached below for refering.

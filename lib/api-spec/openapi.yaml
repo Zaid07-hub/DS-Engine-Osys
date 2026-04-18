@@ -3,20 +3,33 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: DS Engineosys API specification
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication
+  - name: employees
+    description: Employee management
+  - name: departments
+    description: Department management
+  - name: tasks
+    description: Task management
+  - name: performance
+    description: Employee performance analysis
+  - name: products
+    description: Product management
+  - name: analytics
+    description: Analytics and ML predictions
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +37,575 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/register:
+    post:
+      operationId: registerUser
+      tags: [auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+      responses:
+        "201":
+          description: User registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/login:
+    post:
+      operationId: loginUser
+      tags: [auth]
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/logout:
+    post:
+      operationId: logoutUser
+      tags: [auth]
+      summary: Logout
+      responses:
+        "200":
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /auth/me:
+    get:
+      operationId: getCurrentUser
+      tags: [auth]
+      summary: Get current authenticated user
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /departments:
+    get:
+      operationId: getDepartments
+      tags: [departments]
+      summary: Get all departments
+      responses:
+        "200":
+          description: List of departments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Department"
+    post:
+      operationId: createDepartment
+      tags: [departments]
+      summary: Create a department
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDepartmentRequest"
+      responses:
+        "201":
+          description: Department created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Department"
+
+  /departments/{id}:
+    get:
+      operationId: getDepartment
+      tags: [departments]
+      summary: Get department by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Department
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Department"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /employees:
+    get:
+      operationId: getEmployees
+      tags: [employees]
+      summary: Get all employees
+      parameters:
+        - name: departmentId
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of employees
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Employee"
+    post:
+      operationId: createEmployee
+      tags: [employees]
+      summary: Register a new employee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateEmployeeRequest"
+      responses:
+        "201":
+          description: Employee created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Employee"
+
+  /employees/{id}:
+    get:
+      operationId: getEmployee
+      tags: [employees]
+      summary: Get employee by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Employee
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Employee"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: updateEmployee
+      tags: [employees]
+      summary: Update employee
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateEmployeeRequest"
+      responses:
+        "200":
+          description: Employee updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Employee"
+    delete:
+      operationId: deleteEmployee
+      tags: [employees]
+      summary: Delete employee
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /tasks:
+    get:
+      operationId: getTasks
+      tags: [tasks]
+      summary: Get all tasks
+      parameters:
+        - name: employeeId
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [pending, in_progress, completed, failed]
+      responses:
+        "200":
+          description: List of tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Task"
+    post:
+      operationId: createTask
+      tags: [tasks]
+      summary: Create a task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTaskRequest"
+      responses:
+        "201":
+          description: Task created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+
+  /tasks/{id}:
+    get:
+      operationId: getTask
+      tags: [tasks]
+      summary: Get task by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Task
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+    put:
+      operationId: updateTask
+      tags: [tasks]
+      summary: Update task
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTaskRequest"
+      responses:
+        "200":
+          description: Task updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+
+  /performance:
+    get:
+      operationId: getPerformanceRecords
+      tags: [performance]
+      summary: Get performance records
+      parameters:
+        - name: employeeId
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Performance records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PerformanceRecord"
+    post:
+      operationId: createPerformanceRecord
+      tags: [performance]
+      summary: Create a performance record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePerformanceRequest"
+      responses:
+        "201":
+          description: Performance record created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PerformanceRecord"
+
+  /products:
+    get:
+      operationId: getProducts
+      tags: [products]
+      summary: Get all products
+      parameters:
+        - name: category
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+    post:
+      operationId: createProduct
+      tags: [products]
+      summary: Add a new product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProductRequest"
+      responses:
+        "201":
+          description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+
+  /products/{id}:
+    get:
+      operationId: getProduct
+      tags: [products]
+      summary: Get product by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+    put:
+      operationId: updateProduct
+      tags: [products]
+      summary: Update product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProductRequest"
+      responses:
+        "200":
+          description: Updated product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+    delete:
+      operationId: deleteProduct
+      tags: [products]
+      summary: Delete product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /products/{id}/offer:
+    post:
+      operationId: applyProductOffer
+      tags: [products]
+      summary: Apply an offer to a product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApplyOfferRequest"
+      responses:
+        "200":
+          description: Offer applied
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+
+  /analytics/dashboard:
+    get:
+      operationId: getDashboardSummary
+      tags: [analytics]
+      summary: Get dashboard summary stats
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  /analytics/employee-performance:
+    get:
+      operationId: getEmployeePerformanceSummary
+      tags: [analytics]
+      summary: Get aggregated employee performance by department
+      responses:
+        "200":
+          description: Performance summary
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DepartmentPerformanceSummary"
+
+  /analytics/product-ranking:
+    get:
+      operationId: getProductRanking
+      tags: [analytics]
+      summary: Get ML-based product ranking
+      responses:
+        "200":
+          description: Product ranking
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductRanking"
+
+  /analytics/product-prediction/{id}:
+    get:
+      operationId: getProductPrediction
+      tags: [analytics]
+      summary: Get ML prediction for a product's market performance
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Product prediction
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductPrediction"
+
+  /analytics/task-completion:
+    get:
+      operationId: getTaskCompletionStats
+      tags: [analytics]
+      summary: Get task completion statistics
+      responses:
+        "200":
+          description: Task completion stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskCompletionStats"
+
 components:
   schemas:
     HealthStatus:
@@ -31,6 +613,493 @@ components:
       properties:
         status:
           type: string
-      required:
-        - status
+      required: [status]
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+      required: [error]
+
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required: [message]
+
+    RegisterRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        role:
+          type: string
+          enum: [ds_engineer, manager, admin]
+      required: [name, email, password, role]
+
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required: [email, password]
+
+    AuthResponse:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/UserProfile"
+        message:
+          type: string
+      required: [user, message]
+
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum: [ds_engineer, manager, admin]
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, name, email, role, createdAt]
+
+    Department:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        parentId:
+          type: integer
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        employeeCount:
+          type: integer
+      required: [id, name, employeeCount]
+
+    CreateDepartmentRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        parentId:
+          type: integer
+          nullable: true
+        description:
+          type: string
+          nullable: true
+      required: [name]
+
+    Employee:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        employeeId:
+          type: string
+        departmentId:
+          type: integer
+        departmentName:
+          type: string
+        designation:
+          type: string
+        joiningDate:
+          type: string
+          format: date
+        status:
+          type: string
+          enum: [active, inactive, on_leave]
+        performanceScore:
+          type: number
+          nullable: true
+        avatarUrl:
+          type: string
+          nullable: true
+      required: [id, name, email, employeeId, departmentId, departmentName, designation, joiningDate, status]
+
+    CreateEmployeeRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        employeeId:
+          type: string
+        departmentId:
+          type: integer
+        designation:
+          type: string
+        joiningDate:
+          type: string
+          format: date
+        status:
+          type: string
+          enum: [active, inactive, on_leave]
+      required: [name, email, employeeId, departmentId, designation, joiningDate, status]
+
+    UpdateEmployeeRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        departmentId:
+          type: integer
+        designation:
+          type: string
+        status:
+          type: string
+          enum: [active, inactive, on_leave]
+
+    Task:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        employeeId:
+          type: integer
+        employeeName:
+          type: string
+        status:
+          type: string
+          enum: [pending, in_progress, completed, failed]
+        priority:
+          type: string
+          enum: [low, medium, high, critical]
+        dueDate:
+          type: string
+          format: date
+          nullable: true
+        completedAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, title, employeeId, employeeName, status, priority, createdAt]
+
+    CreateTaskRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        employeeId:
+          type: integer
+        status:
+          type: string
+          enum: [pending, in_progress, completed, failed]
+        priority:
+          type: string
+          enum: [low, medium, high, critical]
+        dueDate:
+          type: string
+          format: date
+          nullable: true
+      required: [title, employeeId, status, priority]
+
+    UpdateTaskRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [pending, in_progress, completed, failed]
+        priority:
+          type: string
+          enum: [low, medium, high, critical]
+        dueDate:
+          type: string
+          format: date
+          nullable: true
+
+    PerformanceRecord:
+      type: object
+      properties:
+        id:
+          type: integer
+        employeeId:
+          type: integer
+        employeeName:
+          type: string
+        period:
+          type: string
+        score:
+          type: number
+        tasksCompleted:
+          type: integer
+        tasksFailed:
+          type: integer
+        efficiency:
+          type: number
+        notes:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, employeeId, employeeName, period, score, tasksCompleted, tasksFailed, efficiency, createdAt]
+
+    CreatePerformanceRequest:
+      type: object
+      properties:
+        employeeId:
+          type: integer
+        period:
+          type: string
+        score:
+          type: number
+        tasksCompleted:
+          type: integer
+        tasksFailed:
+          type: integer
+        efficiency:
+          type: number
+        notes:
+          type: string
+          nullable: true
+      required: [employeeId, period, score, tasksCompleted, tasksFailed, efficiency]
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        category:
+          type: string
+        sku:
+          type: string
+        price:
+          type: number
+        cost:
+          type: number
+        stock:
+          type: integer
+        soldUnits:
+          type: integer
+        revenue:
+          type: number
+        offerPercentage:
+          type: number
+          nullable: true
+        marketStatus:
+          type: string
+          enum: [high_demand, moderate, low_demand, critical]
+        imageUrl:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, name, category, sku, price, cost, stock, soldUnits, revenue, marketStatus, createdAt]
+
+    CreateProductRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        category:
+          type: string
+        sku:
+          type: string
+        price:
+          type: number
+        cost:
+          type: number
+        stock:
+          type: integer
+        soldUnits:
+          type: integer
+        marketStatus:
+          type: string
+          enum: [high_demand, moderate, low_demand, critical]
+      required: [name, category, sku, price, cost, stock, soldUnits, marketStatus]
+
+    UpdateProductRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        price:
+          type: number
+        stock:
+          type: integer
+        soldUnits:
+          type: integer
+        marketStatus:
+          type: string
+          enum: [high_demand, moderate, low_demand, critical]
+
+    ApplyOfferRequest:
+      type: object
+      properties:
+        offerPercentage:
+          type: number
+        reason:
+          type: string
+      required: [offerPercentage, reason]
+
+    DashboardSummary:
+      type: object
+      properties:
+        totalEmployees:
+          type: integer
+        activeEmployees:
+          type: integer
+        totalTasks:
+          type: integer
+        completedTasks:
+          type: integer
+        pendingTasks:
+          type: integer
+        totalProducts:
+          type: integer
+        highDemandProducts:
+          type: integer
+        lowDemandProducts:
+          type: integer
+        avgPerformanceScore:
+          type: number
+        totalRevenue:
+          type: number
+      required: [totalEmployees, activeEmployees, totalTasks, completedTasks, pendingTasks, totalProducts, highDemandProducts, lowDemandProducts, avgPerformanceScore, totalRevenue]
+
+    DepartmentPerformanceSummary:
+      type: object
+      properties:
+        departmentId:
+          type: integer
+        departmentName:
+          type: string
+        avgScore:
+          type: number
+        totalEmployees:
+          type: integer
+        completedTasks:
+          type: integer
+        pendingTasks:
+          type: integer
+        efficiency:
+          type: number
+      required: [departmentId, departmentName, avgScore, totalEmployees, completedTasks, pendingTasks, efficiency]
+
+    ProductRanking:
+      type: object
+      properties:
+        productId:
+          type: integer
+        productName:
+          type: string
+        rank:
+          type: integer
+        score:
+          type: number
+        revenue:
+          type: number
+        soldUnits:
+          type: integer
+        profitMargin:
+          type: number
+        trend:
+          type: string
+          enum: [rising, stable, declining]
+        recommendation:
+          type: string
+      required: [productId, productName, rank, score, revenue, soldUnits, profitMargin, trend, recommendation]
+
+    ProductPrediction:
+      type: object
+      properties:
+        productId:
+          type: integer
+        productName:
+          type: string
+        predictedDemand:
+          type: string
+          enum: [high, medium, low]
+        marketLongevityMonths:
+          type: integer
+        profitScore:
+          type: number
+        recommendation:
+          type: string
+          enum: [keep, offer_discount, discontinue, promote]
+        suggestedOfferPercentage:
+          type: number
+          nullable: true
+        confidence:
+          type: number
+        insights:
+          type: array
+          items:
+            type: string
+      required: [productId, productName, predictedDemand, marketLongevityMonths, profitScore, recommendation, confidence, insights]
+
+    TaskCompletionStats:
+      type: object
+      properties:
+        total:
+          type: integer
+        completed:
+          type: integer
+        inProgress:
+          type: integer
+        pending:
+          type: integer
+        failed:
+          type: integer
+        completionRate:
+          type: number
+        byDepartment:
+          type: array
+          items:
+            type: object
+            properties:
+              departmentName:
+                type: string
+              completed:
+                type: integer
+              total:
+                type: integer
+            required: [departmentName, completed, total]
+      required: [total, completed, inProgress, pending, failed, completionRate, byDepartment]
