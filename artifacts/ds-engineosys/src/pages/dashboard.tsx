@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Skeleton } from "@/components/ui/skeleton";
 import { Users, Package, CheckSquare, TrendingUp, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { ProfileCard } from "@/components/profile-card";
 
 export default function Dashboard() {
   const { data: summary, isLoading } = useGetDashboardSummary();
@@ -31,6 +32,8 @@ export default function Dashboard() {
           <h1 className="text-3xl font-bold tracking-tight text-foreground">Dashboard</h1>
           <p className="text-muted-foreground mt-1">Overview of company intelligence and system metrics.</p>
         </div>
+
+        <ProfileCard />
 
         {/* Top Stats Row */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

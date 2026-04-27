@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -33,8 +33,18 @@ const slides = [
 
 export default function Onboarding() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [autoPlay, setAutoPlay] = useState(true);
+
+  useEffect(() => {
+    if (!autoPlay) return;
+    const t = setInterval(() => {
+      setCurrentSlide((s) => (s + 1) % slides.length);
+    }, 3500);
+    return () => clearInterval(t);
+  }, [autoPlay]);
 
   const nextSlide = () => {
+    setAutoPlay(false);
     if (currentSlide < slides.length - 1) {
       setCurrentSlide(currentSlide + 1);
     }

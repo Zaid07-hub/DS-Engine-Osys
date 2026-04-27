@@ -167,6 +167,11 @@ export function PublicLayout({ children }: { children: ReactNode }) {
           <Link href="/login" className="text-sm font-medium hover:text-primary transition-colors">
             Login
           </Link>
+          <Link href="/admin/login" data-testid="link-admin-login">
+            <Button variant="outline" size="sm" className="border-primary/40 text-primary hover:bg-primary/5">
+              Admin Login
+            </Button>
+          </Link>
           <Link href="/register">
             <Button size="sm">Register</Button>
           </Link>
