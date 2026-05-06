@@ -1,6 +1,11 @@
 import { useRoute } from "wouter";
 import { AuthenticatedLayout } from "@/components/layout";
-import { useGetProduct, useGetProductPrediction } from "@workspace/api-client-react";
+import {
+  useGetProduct,
+  useGetProductPrediction,
+  getGetProductQueryKey,
+  getGetProductPredictionQueryKey,
+} from "@workspace/api-client-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -11,11 +16,11 @@ export default function ProductDetail() {
   const id = parseInt(params?.id || "0", 10);
 
   const { data: product, isLoading: isLoadingProd } = useGetProduct(id, {
-    query: { enabled: !!id }
+    query: { queryKey: getGetProductQueryKey(id), enabled: !!id }
   });
 
   const { data: prediction, isLoading: isLoadingPred } = useGetProductPrediction(id, {
-    query: { enabled: !!id }
+    query: { queryKey: getGetProductPredictionQueryKey(id), enabled: !!id }
   });
 
   return (

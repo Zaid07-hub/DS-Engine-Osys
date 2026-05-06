@@ -76,7 +76,10 @@ export function AuthenticatedLayout({ children }: { children: ReactNode }) {
                               : "text-sidebar-foreground"
                           }`}
                         >
-                          <subItem.icon className="h-4 w-4" />
+                          {(() => {
+                            const SubIcon = subItem.icon;
+                            return SubIcon ? <SubIcon className="h-4 w-4" /> : null;
+                          })()}
                           {subItem.label}
                         </div>
                       </Link>
@@ -86,16 +89,19 @@ export function AuthenticatedLayout({ children }: { children: ReactNode }) {
               );
             }
             return (
-              <Link key={item.href} href={item.href!}>
+              <Link key={(item as any).href} href={(item as any).href!}>
                 <div
                   className={`flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground ${
-                    location === item.href
+                    location === (item as any).href
                       ? "bg-sidebar-accent text-sidebar-accent-foreground"
                       : "text-sidebar-foreground"
                   }`}
                 >
-                  <item.icon className="h-4 w-4" />
-                  {item.label}
+                  {(() => {
+                    const Icon = (item as any).icon;
+                    return Icon ? <Icon className="h-4 w-4" /> : null;
+                  })()}
+                  {(item as any).label}
                 </div>
               </Link>
             );

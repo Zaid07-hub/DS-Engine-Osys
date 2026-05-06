@@ -1,6 +1,11 @@
 import { useRoute } from "wouter";
 import { AuthenticatedLayout } from "@/components/layout";
-import { useGetDepartment, useGetEmployees } from "@workspace/api-client-react";
+import {
+  useGetDepartment,
+  useGetEmployees,
+  getGetDepartmentQueryKey,
+  getGetEmployeesQueryKey,
+} from "@workspace/api-client-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -13,12 +18,12 @@ export default function DepartmentDetail() {
   const id = parseInt(params?.id || "0", 10);
 
   const { data: department, isLoading: isLoadingDept } = useGetDepartment(id, {
-    query: { enabled: !!id }
+    query: { queryKey: getGetDepartmentQueryKey(id), enabled: !!id }
   });
 
   const { data: employees, isLoading: isLoadingEmployees } = useGetEmployees(
     { departmentId: id },
-    { query: { enabled: !!id } }
+    { query: { queryKey: getGetEmployeesQueryKey({departmentId: id}), enabled: !!id } }
   );
 
   return (

@@ -1,6 +1,13 @@
 import { useRoute } from "wouter";
 import { AuthenticatedLayout } from "@/components/layout";
-import { useGetEmployee, useGetTasks, useGetPerformanceRecords } from "@workspace/api-client-react";
+import {
+  useGetEmployee,
+  useGetTasks,
+  useGetPerformanceRecords,
+  getGetEmployeeQueryKey,
+  getGetTasksQueryKey,
+  getGetPerformanceRecordsQueryKey,
+} from "@workspace/api-client-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -13,17 +20,17 @@ export default function EmployeeDetail() {
   const id = parseInt(params?.id || "0", 10);
 
   const { data: employee, isLoading: isLoadingEmp } = useGetEmployee(id, {
-    query: { enabled: !!id }
+    query: { queryKey: getGetEmployeeQueryKey(id), enabled: !!id }
   });
 
   const { data: tasks, isLoading: isLoadingTasks } = useGetTasks(
     { employeeId: id },
-    { query: { enabled: !!id } }
+    { query: { queryKey: getGetTasksQueryKey({employeeId: id}), enabled: !!id } }
   );
 
   const { data: performance, isLoading: isLoadingPerf } = useGetPerformanceRecords(
     { employeeId: id },
-    { query: { enabled: !!id } }
+    { query: { queryKey: getGetPerformanceRecordsQueryKey({employeeId: id}), enabled: !!id } }
   );
 
   const pendingTasks = tasks?.filter(t => t.status === "pending" || t.status === "in_progress") || [];

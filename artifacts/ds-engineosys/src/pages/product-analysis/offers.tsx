@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Tag, AlertTriangle, TrendingDown, Percent, Loader2 } from "lucide-react";
+import { Tag, AlertTriangle, TrendingDown, Percent, Loader2, Package } from "lucide-react";
 
 export default function Offers() {
   const { toast } = useToast();

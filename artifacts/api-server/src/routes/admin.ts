@@ -1,7 +1,9 @@
-import { Router } from "express";
+import { Router, type Request, type Response, type NextFunction } from "express";
 import { db, usersTable, employeesTable, productsTable, tasksTable } from "@workspace/db";
 import { eq, sql } from "drizzle-orm";
 import { z } from "zod";
+import type { AppSession } from "../types/session";
+import "../types/session";
 
 const router = Router();
 
@@ -13,12 +15,8 @@ const loginSchema = z.object({
   password: z.string(),
 });
 
-function requireAdmin(
-  req: Parameters<Parameters<Router["use"]>[0]>[0],
-  res: Parameters<Parameters<Router["use"]>[0]>[1],
-  next: Parameters<Parameters<Router["use"]>[0]>[2],
-) {
-  const session = req.session as Record<string, unknown>;
+function requireAdmin(req: Request, res: Response, next: NextFunction) {
+  const session = req.session as AppSession;
   if (!session.isAdmin) {
     res.status(401).json({ error: "Unauthorized", message: "Admin login required" });
     return;
@@ -26,7 +24,7 @@ function requireAdmin(
   next();
 }
 
-router.post("/admin/login", (req, res) => {
+router.post("/admin/login", (req: Request, res: Response) => {
   const parsed = loginSchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: "Invalid input", message: parsed.error.message });
@@ -37,8 +35,9 @@ router.post("/admin/login", (req, res) => {
     res.status(401).json({ error: "Unauthorized", message: "Invalid admin credentials" });
     return;
   }
-  (req.session as Record<string, unknown>).isAdmin = true;
-  (req.session as Record<string, unknown>).adminUsername = ADMIN_USERNAME;
+  const session = req.session as AppSession;
+  session.isAdmin = true;
+  session.adminUsername = ADMIN_USERNAME;
   res.json({
     admin: {
       username: ADMIN_USERNAME,
@@ -49,15 +48,15 @@ router.post("/admin/login", (req, res) => {
   });
 });
 
-router.post("/admin/logout", (req, res) => {
-  const session = req.session as Record<string, unknown>;
+router.post("/admin/logout", (req: Request, res: Response) => {
+  const session = req.session as AppSession;
   delete session.isAdmin;
   delete session.adminUsername;
   res.json({ message: "Admin logged out" });
 });
 
-router.get("/admin/me", (req, res) => {
-  const session = req.session as Record<string, unknown>;
+router.get("/admin/me", (req: Request, res: Response) => {
+  const session = req.session as AppSession;
   if (!session.isAdmin) {
     res.status(401).json({ error: "Unauthorized", message: "Not logged in as admin" });
     return;
@@ -69,7 +68,7 @@ router.get("/admin/me", (req, res) => {
   });
 });
 
-router.get("/admin/registration-requests", requireAdmin, async (_req, res) => {
+router.get("/admin/registration-requests", requireAdmin, async (_req: Request, res: Response) => {
   const rows = await db
     .select({
       id: usersTable.id,
@@ -85,7 +84,7 @@ router.get("/admin/registration-requests", requireAdmin, async (_req, res) => {
   res.json(rows.map((r) => ({ ...r, createdAt: r.createdAt.toISOString() })));
 });
 
-router.post("/admin/registration-requests/:id/allow", requireAdmin, async (req, res) => {
+router.post("/admin/registration-requests/:id/allow", requireAdmin, async (req: Request, res: Response) => {
   const id = Number(req.params.id);
   if (!Number.isFinite(id)) {
     res.status(400).json({ error: "Invalid id" });
@@ -103,7 +102,7 @@ router.post("/admin/registration-requests/:id/allow", requireAdmin, async (req, 
   res.json({ message: "DS Engineer approved", id: updated.id, status: updated.status });
 });
 
-router.post("/admin/registration-requests/:id/deny", requireAdmin, async (req, res) => {
+router.post("/admin/registration-requests/:id/deny", requireAdmin, async (req: Request, res: Response) => {
   const id = Number(req.params.id);
   if (!Number.isFinite(id)) {
     res.status(400).json({ error: "Invalid id" });
@@ -121,7 +120,7 @@ router.post("/admin/registration-requests/:id/deny", requireAdmin, async (req, r
   res.json({ message: "DS Engineer denied", id: updated.id, status: updated.status });
 });
 
-router.get("/admin/dashboard", requireAdmin, async (_req, res) => {
+router.get("/admin/dashboard", requireAdmin, async (_req: Request, res: Response) => {
   const [{ totalEngineers, approved, pending, denied }] = await db
     .select({
       totalEngineers: sql<number>`count(*)::int`,

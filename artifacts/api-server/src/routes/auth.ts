@@ -1,7 +1,9 @@
-import { Router } from "express";
+import { Router, type Request, type Response } from "express";
 import { db, usersTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
+import type { AppSession } from "../types/session";
+import "../types/session";
 
 const router = Router();
 
@@ -40,7 +42,7 @@ function formatUser(user: typeof usersTable.$inferSelect) {
 }
 
 // DS Engineer registration request — creates a pending user, no password yet.
-router.post("/auth/register-request", async (req, res) => {
+router.post("/auth/register-request", async (req: Request, res: Response) => {
   const parsed = registerRequestSchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: "Invalid input", message: parsed.error.message });
@@ -104,7 +106,7 @@ router.post("/auth/register-request", async (req, res) => {
 });
 
 // DS Engineer polls this with their email to know whether the admin approved.
-router.get("/auth/registration-status", async (req, res) => {
+router.get("/auth/registration-status", async (req: Request, res: Response) => {
   const email = String(req.query.email ?? "").trim();
   if (!email) {
     res.status(400).json({ error: "Missing email", message: "email query is required" });
@@ -128,7 +130,7 @@ router.get("/auth/registration-status", async (req, res) => {
 });
 
 // After approval the DS Engineer sets their password and is logged in.
-router.post("/auth/set-password", async (req, res) => {
+router.post("/auth/set-password", async (req: Request, res: Response) => {
   const parsed = setPasswordSchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: "Invalid input", message: parsed.error.message });
@@ -156,11 +158,12 @@ router.post("/auth/set-password", async (req, res) => {
     .set({ password })
     .where(eq(usersTable.id, user.id))
     .returning();
-  (req.session as Record<string, unknown>).userId = updated!.id;
+  const session = req.session as AppSession;
+  session.userId = updated!.id;
   res.json({ user: formatUser(updated!), message: "Password set successfully" });
 });
 
-router.post("/auth/login", async (req, res) => {
+router.post("/auth/login", async (req: Request, res: Response) => {
   const parsed = loginSchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: "Invalid input", message: parsed.error.message });
@@ -190,18 +193,19 @@ router.post("/auth/login", async (req, res) => {
     });
     return;
   }
-  (req.session as Record<string, unknown>).userId = user.id;
+  const session = req.session as AppSession;
+  session.userId = user.id;
   res.json({ user: formatUser(user), message: "Login successful" });
 });
 
-router.post("/auth/logout", (req, res) => {
+router.post("/auth/logout", (req: Request, res: Response) => {
   req.session.destroy(() => {
     res.json({ message: "Logged out successfully" });
   });
 });
 
-router.get("/auth/me", async (req, res) => {
-  const session = req.session as Record<string, unknown>;
+router.get("/auth/me", async (req: Request, res: Response) => {
+  const session = req.session as AppSession;
   if (!session.userId) {
     res.status(401).json({ error: "Unauthorized", message: "Not logged in" });
     return;
@@ -209,7 +213,7 @@ router.get("/auth/me", async (req, res) => {
   const [user] = await db
     .select()
     .from(usersTable)
-    .where(eq(usersTable.id, session.userId as number))
+    .where(eq(usersTable.id, session.userId))
     .limit(1);
   if (!user) {
     res.status(401).json({ error: "Unauthorized", message: "User not found" });
@@ -218,8 +222,8 @@ router.get("/auth/me", async (req, res) => {
   res.json(formatUser(user));
 });
 
-router.post("/auth/avatar", async (req, res) => {
-  const session = req.session as Record<string, unknown>;
+router.post("/auth/avatar", async (req: Request, res: Response) => {
+  const session = req.session as AppSession;
   if (!session.userId) {
     res.status(401).json({ error: "Unauthorized", message: "Not logged in" });
     return;
@@ -232,13 +236,13 @@ router.post("/auth/avatar", async (req, res) => {
   const [updated] = await db
     .update(usersTable)
     .set({ avatarUrl: parsed.data.avatarUrl })
-    .where(eq(usersTable.id, session.userId as number))
+    .where(eq(usersTable.id, session.userId))
     .returning();
   res.json({ user: formatUser(updated!), message: "Profile photo updated" });
 });
 
 // Legacy register endpoint kept for backward compatibility — now treated as a request.
-router.post("/auth/register", async (req, res) => {
+router.post("/auth/register", async (req: Request, res: Response) => {
   const schema = z.object({
     name: z.string().min(1),
     email: z.string().email(),

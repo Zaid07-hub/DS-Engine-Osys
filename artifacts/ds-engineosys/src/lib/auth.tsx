@@ -14,6 +14,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { data: user, isLoading, isError } = useGetCurrentUser({
     query: {
+      queryKey: getGetCurrentUserQueryKey(),
       retry: false,
     },
   });
